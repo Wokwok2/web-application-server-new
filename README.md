@@ -17,7 +17,7 @@
 ### 요구사항 1 - http://localhost:8080/index.html로 접속시 응답
 
 ---
-1. 요청을 하나씩 읽어야 한다. 요청은 다음과 같이 들어온다고 한다.
+1. 요청을 하나씩 읽어야 한다. 요청은 다음과 같이 들어온다고 한다. hi.
    
      ``` http request
     GET /index.html HTTP/1.1
