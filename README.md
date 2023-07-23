@@ -14,6 +14,8 @@
 * 구현을 완료한 후 구현 과정에서 새롭게 알게된 내용, 궁금한 내용을 기록한다.
 * 각 요구사항을 구현하는 것이 중요한 것이 아니라 구현 과정을 통해 학습한 내용을 인식하는 것이 배움에 중요하다. 
 
+# 요구사항 
+
 ### 요구사항 1 - http://localhost:8080/index.html로 접속시 응답
 
 ---
@@ -145,7 +147,7 @@
    아래와 같은 방법으로 구분했다.  
 
    ```java
-   // 요청 url 을 잘라 파일 경로르 추춣한다.
+   // 요청 url 을 잘라 파일 경로를 추춣한다.
    String[] tokens = line.split(" ");
    String url = tokens[1];
    log.info("URL: {}",url);
@@ -249,7 +251,23 @@
    그러면 이제 본론인 User 객체를 생성해보자!  
 9. 오 쉿. 파싱은 util.HttpRequestUtils 클래스의 parseQueryString()을 사용해서 하는 것이였다....  
    몰라 내가 했으니 내껄로 할래. 이거 너무 복잡해..  
+```java
+현재 에러가 존재한다.  
+broken pipe 에러다. 이 때문에 화면이 응답을 받아오질 못하고 있다.  
+문제를 찾아냈다. bufferedReader 로 요청 데이터를 읽어오는데 
+마지막까지 줄까지 요청이 갔음에도 계속 읽어오려고 해서 생긴 에러이다.  
 
+ while(!"".equals(line)){
+    log.info("{}",line);
+    line = br.readLine();
+}
+
+line = br.readLine();
+line = br.readLine();
+
+위와 같이 요청을 다 읽어왔음에도 불구하고 내가 두 줄을 더 읽겠다고 해서 에러가 발생했다.  
+broken pipe 에러는 소켓이 닫혔음에도 계속해서 요청을 해서 발생하는 에러라고 한다.
+```
    
 ### 요구사항 3 - post 방식으로 회원가입
 * 이제 http method를 POST 변경해서 회원가입을 진행해보자.  

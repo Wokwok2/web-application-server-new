@@ -43,43 +43,43 @@ public class RequestHandler extends Thread {
             String[] url_suffix = url.split("\\?");
 
             // 파라미터가 있을 때의 조건
-            if (url_suffix.length > 1) {
-                String[] param = url_suffix[1].split("&");
-
-                // 이제 파라미터들이 ['name=hi','age=14'] 이렇게 들어가 있다.
-                // 이제 이것을 '=' 으로 나눠서 termpList 에 넣자
-                // 그리고 이 데이터를 다시 Map 데이터에 세팅하자.
-                Map<String, Object> map = new HashMap<>();
-                for (String s : param) {
-                    log.info("param : {}", s);
-                    String[] tempList = s.split("=");
-                    if (tempList.length > 1) {
-                        map.put(tempList[0], tempList[1]);
-                    }else{
-                        map.put(tempList[0], "");
-                    }
-                }
-                log.info("map : {}", map);
-                String userId = (String) map.get("userId");
-                String password = (String) map.get("password");
-                String name = (String) map.get("name");
-                String email = (String) map.get("email");
-
-                User user = new User(userId, password, name, email);
-            }
+//            if (url_suffix.length > 1) {
+//                String[] param = url_suffix[1].split("&");
+//
+//                // 이제 파라미터들이 ['name=hi','age=14'] 이렇게 들어가 있다.
+//                // 이제 이것을 '=' 으로 나눠서 termpList 에 넣자
+//                // 그리고 이 데이터를 다시 Map 데이터에 세팅하자.
+//                Map<String, Object> map = new HashMap<>();
+//                for (String s : param) {
+//                    log.info("param : {}", s);
+//                    String[] tempList = s.split("=");
+//                    if (tempList.length > 1) {
+//                        map.put(tempList[0], tempList[1]);
+//                    }else{
+//                        map.put(tempList[0], "");
+//                    }
+//                }
+//                log.info("map : {}", map);
+//                String userId = (String) map.get("userId");
+//                String password = (String) map.get("password");
+//                String name = (String) map.get("name");
+//                String email = (String) map.get("email");
+//
+//                User user = new User(userId, password, name, email);
+//            }
 
             // 만약 요청이 null 이면 종료
-            if (line == null) return;
+//            if (line == null) return;
 
             while(!"".equals(line)){
                 log.info("{}",line);
                 line = br.readLine();
             }
 
-            line = br.readLine();
-            log.info("{}",line);
-            line = br.readLine();
-            log.info("{}",line);
+//            line = br.readLine();
+//            log.info("hi: {}",line);
+//            line = br.readLine();
+//            log.info("hi2: {}",line);
 
             // OutStream을 통해 응답 출력
             DataOutputStream dos = new DataOutputStream(out);
