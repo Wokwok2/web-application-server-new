@@ -76,10 +76,10 @@ public class RequestHandler extends Thread {
                 line = br.readLine();
             }
 
-//            line = br.readLine();
 //            log.info("hi: {}",line);
 //            line = br.readLine();
 //            log.info("hi2: {}",line);
+//            line = br.readLine();
 
             // OutStream을 통해 응답 출력
             DataOutputStream dos = new DataOutputStream(out);
