@@ -10,6 +10,7 @@ import java.util.Map;
 import model.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import util.HttpRequestUtils;
 
 public class RequestHandler extends Thread {
     private static final Logger log = LoggerFactory.getLogger(RequestHandler.class);
@@ -41,35 +42,49 @@ public class RequestHandler extends Thread {
 
             // url 에서 파라미터들을 분리한다. ?name=hi&age=14 이렇게 되어있기에 파라미터는 index = 1에 저장된다.
             String[] url_suffix = url.split("\\?");
-
+            log.info("url_suffix[0]: {}",url_suffix[0]);
             // 파라미터가 있을 때의 조건
-//            if (url_suffix.length > 1) {
-//                String[] param = url_suffix[1].split("&");
-//
-//                // 이제 파라미터들이 ['name=hi','age=14'] 이렇게 들어가 있다.
-//                // 이제 이것을 '=' 으로 나눠서 termpList 에 넣자
-//                // 그리고 이 데이터를 다시 Map 데이터에 세팅하자.
-//                Map<String, Object> map = new HashMap<>();
-//                for (String s : param) {
-//                    log.info("param : {}", s);
-//                    String[] tempList = s.split("=");
-//                    if (tempList.length > 1) {
-//                        map.put(tempList[0], tempList[1]);
-//                    }else{
-//                        map.put(tempList[0], "");
-//                    }
-//                }
-//                log.info("map : {}", map);
-//                String userId = (String) map.get("userId");
-//                String password = (String) map.get("password");
-//                String name = (String) map.get("name");
-//                String email = (String) map.get("email");
-//
-//                User user = new User(userId, password, name, email);
-//            }
+            if (url_suffix[0].equals("/user/create") ) {
+
+                Map<String, String> paramMap = HttpRequestUtils.parseQueryString(url_suffix[1]);
+                log.info("paramMap : {}", paramMap);
+
+                String userId = (String) paramMap.get("userId");
+                String password = (String) paramMap.get("password");
+                String name = (String) paramMap.get("name");
+                String email = (String) paramMap.get("email");
+
+                User user = new User(userId, password, name, email);
+                log.info("User : {}", user);
+                /* 이전 코드 START
+
+                String[] param = url_suffix[1].split("&");
+                // 이제 파라미터들이 param = ['name=hi','age=14'] 이렇게 들어가 있다.
+                // 이제 이것을 split을 사용해 '=' 으로 나눠서 termpList 에 넣자
+                // 그리고 이 데이터를 다시 Map 데이터에 세팅하자.
+                Map<String, Object> map = new HashMap<>();
+                for (String s : param) {
+                    log.info("param : {}", s);
+                    String[] tempList = s.split("=");
+                    if (tempList.length > 1) {
+                        map.put(tempList[0], tempList[1]);
+                    }else{
+                        map.put(tempList[0], "");
+                    }
+                }
+                log.info("map : {}", map);
+                String userId = (String) map.get("userId");
+                String password = (String) map.get("password");
+                String name = (String) map.get("name");
+                String email = (String) map.get("email");
+
+                User user = new User(userId, password, name, email);
+                
+                이전 코드 START*/
+            }
 
             // 만약 요청이 null 이면 종료
-//            if (line == null) return;
+            if (line == null) return;
 
             while(!"".equals(line)){
                 log.info("{}",line);

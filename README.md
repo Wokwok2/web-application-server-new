@@ -251,26 +251,55 @@
    그러면 이제 본론인 User 객체를 생성해보자!  
 9. 오 쉿. 파싱은 util.HttpRequestUtils 클래스의 parseQueryString()을 사용해서 하는 것이였다....  
    몰라 내가 했으니 내껄로 할래. 이거 너무 복잡해..  
-```java
-현재 에러가 존재한다.  
-broken pipe 에러다. 이 때문에 화면이 응답을 받아오질 못하고 있다.  
-문제를 찾아냈다. bufferedReader 로 요청 데이터를 읽어오는데 
-마지막까지 줄까지 요청이 갔음에도 계속 읽어오려고 해서 생긴 에러이다.  
-
- while(!"".equals(line)){
-    log.info("{}",line);
-    line = br.readLine();
-}
-
-line = br.readLine();
-line = br.readLine();
-
-위와 같이 요청을 다 읽어왔음에도 불구하고 내가 두 줄을 더 읽겠다고 해서 에러가 발생했다.  
-broken pipe 에러는 소켓이 닫혔음에도 계속해서 요청을 해서 발생하는 에러라고 한다.
-```
+   ```java
+   현재 에러가 존재한다.  
+   broken pipe 에러다. 이 때문에 화면이 응답을 받아오질 못하고 있다.  
+   문제를 찾아냈다. bufferedReader 로 요청 데이터를 읽어오는데 
+   마지막까지 줄까지 요청이 갔음에도 계속 읽어오려고 해서 생긴 에러이다.  
    
+    while(!"".equals(line)){
+       log.info("{}",line);
+       line = br.readLine();
+   }
+   
+   line = br.readLine();
+   line = br.readLine();
+   
+   위와 같이 요청을 다 읽어왔음에도 불구하고 내가 두 줄을 더 읽겠다고 해서 에러가 발생했다.  
+   broken pipe 에러는 소켓이 닫혔음에도 계속해서 요청을 해서 발생하는 에러라고 한다.
+   ```
+10. 위에서 생긴 에러 때문에 조금 꼬였다. 어차피 오랜만에 프로젝트를 다시 시작한거라 천천히 다시 봐야 한다.  
+   이 기회에 User 객체에 넣는 방법을 원래 책에서 말한 은 util.HttpRequestutils 클래스의 parsequerystring() 메소드를 사용해보자.  
+   이제 보니 이미 Test 클래스까지 존재한다. 테스트도 해보자.
+11. 아래의 테스트를 진행해보니 해당 클래스의 기능을 이해할 수 있었다.  
+   ```java
+    public class HttpRequestUtilsTest {
+       public void parseQueryString() {
+           String queryString = "userId=javajigi";
+           Map<String, String> parameters = HttpRequestUtils.parseQueryString(queryString);
+           assertThat(parameters.get("userId"), is("javajigi"));
+           assertThat(parameters.get("password"), is(nullValue()));
+   
+           queryString = "userId=javajigi&password=password2";
+           parameters = HttpRequestUtils.parseQueryString(queryString);
+           assertThat(parameters.get("userId"), is("javajigi"));
+           assertThat(parameters.get("password"), is("password2"));
+       }
+    }
+   ```
+   타입이 String인 쿼리스트링을  HttpRequestUtils.parseQueryString() 메소드의 파라미터으로 넣으면 Map 형식의 데이터가 리턴된다.  
+   내가 작성한 코드가 아깝기는 하지만 그래도 확실히 이게 깔끔한 것 같다.  
+   
+12. url 을 '?'로 잘랐을 때 index=0 인 부분이 요청 url 부분, index=1 인 부분인 파라미터 부분이다.  
+   이 때, url_suffix[0].equals("/user/create") 일 때 파라미터를 User객체에 넣는 작업을 진행하자.  
+   그러면 아래와 같이 문제 없이 출력된다.  
+   paramMap : {password=test01, userId=test01}  
+   user : User [userId=test01, password=test01, name=null, email=null]
+
+
 ### 요구사항 3 - post 방식으로 회원가입
-* 이제 http method를 POST 변경해서 회원가입을 진행해보자.  
+* 이제 http method를 POST 변경해서 회원가입을 진행해보자.
+* Post는 body에서 데이터를 꺼내야 한다. 그렇기에 url에서 데이터를 가져오는 Get방식보다 조금 더 까다로울 수 있다. 
    
 
 ### 요구사항 4 - redirect 방식으로 이동
