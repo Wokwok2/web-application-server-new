@@ -71,7 +71,7 @@
    ```
 5. 아래의 toPath() 메소드는 Path 타입의 데이터를 리턴한다.
 
-   그리고 File 객체는 하드디스크에 존재하는 실제 파일의 데이터가 들어가 있는게 아니고, 
+   File 객체는 하드디스크에 존재하는 실제 파일의 데이터가 들어가 있는게 아니고, 
    그것을 참조하는 경로를 추상화한 객체이다.
 
    ```java
@@ -91,7 +91,7 @@
    index.html이 로드될 때 해당 요청들이 생기는 것이다.
    
 7. 해당 RequestHandler 클래스는 Thead를 확장(상속)한 것이다.  
-   그렇기에 Thread 함수에 대해 알 필요가 있다.s
+   그렇기에 Thread 함수에 대해 알 필요가 있다.
    <details>
      <summary>Thread란?</summary>
      <div markdown="1">
@@ -300,9 +300,41 @@
 
 ### 요구사항 3 - post 방식으로 회원가입
 * 이제 http method를 POST 변경해서 회원가입을 진행해보자.
-* Post는 body에서 데이터를 꺼내야 한다. 그렇기에 url에서 데이터를 가져오는 Get방식보다 조금 더 까다로울 수 있다. 
+* Post는 body에서 데이터를 꺼내야 한다. 그렇기에 url에서 데이터를 가져오는 Get방식보다 조금 더 까다로울 수 있다.  
+1. POST인 경우는 body에 데이터가 존재한다. 그렇기에 http header 에서 한 줄 띄어진 http body에 존재한다.  
+   이를 구현하기 위해서 회원가입 요청이 들어왔을 때만 한줄을 더 읽어서 http body 데이터를 받아오자.
+2. body 데이터를 가져올 때 IOUtil.readData() 메소드를 사용하라고 한다.  
+   첫 번째 파라미터에는 BufferedReader 값을, 두 번째 파라미터에는 body의 길이를 넣으라고 한다.  
+   길이는 http header의 Content-Length 의 값으로 들어가 있다.  
+   그렇기에 bufferedReader를 하나씩 읽을 때 아래와 같이 Content-Length 를 찾았다.
+   ```java
+   while(!"".equals(line)){  
+    if(line.contains("Content-Length")){
+        String[] lengthArray = line.split(" ");
+        int contentLength = Integer.parseInt(lengthArray[1]);
+        log.info("contentLength: {}",contentLength);
+    }
+        log.info("{}",line);
+        line = br.readLine();
+   }
+   ```
+   위와 같이 Content-Length 가 들어있는 line을 찾아서 여기서 contentLength 를 구했다.  
+   그런데 br을 파라미터로 넣으라는데 그게 무슨 말인지 잘 모르겠다. 그냥 일단 넣어보고 돌려보자.  
+3. 오 그냥 br을 넣으니깐 원하던 대로 데이터가 나온다.
+   ```
+   // 아래와 같이 코드를 작성하니 
+   String bodyData = IOUtils.readData(br, contentLength);
+   log.info("bodyData: {}",bodyData);
    
-
+   // 이렇게 로그가 출력된다.
+   bodyData: userId=test01&password=test01&name=&email=
+   ```
+   난 처음에 본문이 header의 한줄 다음에 온다고 하길래 while문이 끝난 후에 한번 더 readline() 을 사용했는데 계속 에러가 발생했다.  
+   그런데 지금 사용하는 readData 메소드는 에러가 발생하지 않았다. 
+   br.read 메소드가 한 글자씩 읽어오는 메소드라고 하는데 이것 때문에 그런건가..?  
+   어쨋든 본문을 가져왔으니 이것을 다시 User 객체에 넣으면 된다.
+4. 
+   
 ### 요구사항 4 - redirect 방식으로 이동
 * 
 
