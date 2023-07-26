@@ -15,7 +15,8 @@
 * 각 요구사항을 구현하는 것이 중요한 것이 아니라 구현 과정을 통해 학습한 내용을 인식하는 것이 배움에 중요하다. 
 
 # 요구사항 
-
+### ServerSocket 에 관하여
+* 실습에 들어가기 앞서 
 ### 요구사항 1 - http://localhost:8080/index.html로 접속시 응답
 
 ---
@@ -31,18 +32,18 @@
 코드는 아래와 같다.
    ```java
    public void run() {
-   log.debug("New Client Connect! Connected IP : {}, Port : {}", connection.getInetAddress(),
-   connection.getPort());
+   	log.debug("New Client Connect! Connected IP : {}, Port : {}", connection.getInetAddress
+   	connection.getPort());
    
-   try (InputStream in = connection.getInputStream(); OutputStream out = connection.getOutputStream()) {
-      // TODO 사용자 요청에 대한 처리는 이 곳에 구현하면 된다.
-      DataOutputStream dos = new DataOutputStream(out);
-      byte[] body = "Hello World".getBytes();
-      response200Header(dos, body.length);
-      responseBody(dos, body);
-   } catch (IOException e) {
-        log.error(e.getMessage());
-   }
+	try (InputStream in = connection.getInputStream(); OutputStream out = connection.getOutputStream()) {
+	      // TODO 사용자 요청에 대한 처리는 이 곳에 구현하면 된다.
+	      DataOutputStream dos = new DataOutputStream(out);
+	      byte[] body = "Hello World".getBytes();
+	      response200Header(dos, body.length);
+	      responseBody(dos, body);
+	} catch (IOException e) {
+		log.error(e.getMessage());
+	}
    }
    ```
    
