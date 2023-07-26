@@ -292,6 +292,7 @@
    
 12. url 을 '?'로 잘랐을 때 index=0 인 부분이 요청 url 부분, index=1 인 부분인 파라미터 부분이다.  
    이 때, url_suffix[0].equals("/user/create") 일 때 파라미터를 User객체에 넣는 작업을 진행하자.  
+   
    그러면 아래와 같이 문제 없이 출력된다.  
    paramMap : {password=test01, userId=test01}  
    user : User [userId=test01, password=test01, name=null, email=null]
