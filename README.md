@@ -16,7 +16,21 @@
 
 # 요구사항 
 ### ServerSocket 에 관하여
-* 실습에 들어가기 앞서 
+* 실습에 들어가기 앞서 TCP/IP 통신에 대해서 알아야 한다.
+  TCP/IP 통신은 소켓을 통한 통신으로 Server Socket 과 Client Socket이 존재한다.
+* 서버 소켓은 서버프로그램에서 사용하는 소켓이다. 클라이언트의 연결 요청이 오는 것을 기다렸다가 연결 요청이 들어오면 연결을 한다.
+* 클라이언트 소켓은 클라이언트 프로그램에서 서버 프로그램으로 연결 요청을 하고, 데이터 전송 역할을 한다.
+* 서버 소켓 사용 방법
+  ```
+  ServerSocket server = new ServerSocket(포트번호);
+  // 클라이언트로부터 연결 요청이 들어오면 연결을 맺고 클라이언트 소켓을 생성해서 리턴한다.
+  Socket socket = server.accept();
+  ```
+* 클라이언트 소켓 사용 방법
+  Socket socket = new Socket(서버 아이피, 서버 포트번호);
+
+> 참조 : https://juyoung-1008.tistory.com/19
+---
 ### 요구사항 1 - http://localhost:8080/index.html로 접속시 응답
 
 ---
