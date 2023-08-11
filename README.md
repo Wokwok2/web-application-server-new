@@ -348,10 +348,24 @@
    그런데 지금 사용하는 readData 메소드는 에러가 발생하지 않았다. 
    br.read 메소드가 한 글자씩 읽어오는 메소드라고 하는데 이것 때문에 그런건가..?  
    어쨋든 본문을 가져왔으니 이것을 다시 User 객체에 넣으면 된다.
-4. 
+4. 아래 코드를 사용해서 User 객체에 넣는 것까지 완료했다.  
+   ```java
+   String bodyData = IOUtils.readData(br, contentLength);
+   log.info("bodyData: {}",bodyData);
+   Map<String, String> paramMap = HttpRequestUtils.parseQueryString(bodyData);
+
+   String userId = (String) paramMap.get("userId");
+   String password = (String) paramMap.get("password");
+   String name = (String) paramMap.get("name");
+   String email = (String) paramMap.get("email");
+
+   User user = new User(userId, password, name, email);
+   log.info("User : {}", user);
+   ```
    
 ### 요구사항 4 - redirect 방식으로 이동
-* 
+* 회원가입이 완료된 후 /index.html 로 이동해야 한다.  
+* 이 때, 응답 헤더의 status code를 200이 아니라 302를 사용해야 한다.
 
 ### 요구사항 5 - cookie
 * 
