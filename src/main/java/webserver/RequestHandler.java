@@ -76,14 +76,18 @@ public class RequestHandler extends Thread {
                 log.info("User : {}", user);
             }
 
-
             // OutStream을 통해 응답 출력
             DataOutputStream dos = new DataOutputStream(out);
-            byte[] body = Files.readAllBytes(new File("./webapp" + url).toPath());
-            log.info("Path: {}",new File("./webapp" + url).toPath());
 
-            response200Header(dos, body.length);
-            responseBody(dos, body);
+            if (url_suffix[0].equals("/user/create") ) {
+                response302Header(dos);
+            }else{
+                byte[] body = Files.readAllBytes(new File("./webapp" + url).toPath());
+                log.info("Path: {}",new File("./webapp" + url).toPath());
+                response200Header(dos, body.length);
+                responseBody(dos, body);
+            }
+
         } catch (IOException e) {
             log.error(e.getMessage());
         }
@@ -95,6 +99,19 @@ public class RequestHandler extends Thread {
             dos.writeBytes("Content-Type: text/html;charset=utf-8\r\n");
             dos.writeBytes("Content-Length: " + lengthOfBodyContent + "\r\n");
             dos.writeBytes("\r\n");
+        } catch (IOException e) {
+            log.error(e.getMessage());
+        }
+    }
+   private void response302Header(DataOutputStream dos) {
+        try {
+            String location = "/index.html";
+
+            dos.writeBytes("HTTP/1.1 200 Found \r\n");
+            dos.writeBytes("Location: "+ location);
+            dos.writeBytes("\r\n");
+
+            log.info("Location : {}", location);
         } catch (IOException e) {
             log.error(e.getMessage());
         }

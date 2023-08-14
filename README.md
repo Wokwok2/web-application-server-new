@@ -92,8 +92,8 @@
    ```java
    new File("./webapp" + url).toPath();
    ```
-   이제 파일의 경로를 받아왔으니 Files.readAllBytes을 사용해 파일을 읽어오자.
-   그리고 읽어온 파일을 response의 header와 body에 넣어주자.
+   파일의 경로를 받아왔으니 Files.readAllBytes을 사용해 파일을 읽어온다.
+   그리고 읽어온 파일을 response의 header와 body에 넣는다.
    ```java
    byte[] body = Files.readAllBytes(new File("./webapp" + url).toPath());
    response200Header(dos, body.length);
@@ -129,7 +129,7 @@
 * 저장을 한 뒤 flush() 를 사용하는데 이것은 남아있는 데이터를 보내는 것 같다.  
    다음 실행때 남아있는게 없기 위해 안전을 위해 써주는게 좋지만 안쓴다고 에러가 생기진 않더라.
 9. ServerSocket 이란?  
-   갑자기 ServerSocket 이 어디서 튀어나왔냐면 WebServer에 있는 클래스이다.  
+   갑자기 ServerSocket 이 어디서 튀어나왔냐면 WebServer.java 에 있는 클래스이다.  
    ```java
    try (ServerSocket listenSocket = new ServerSocket(port)) {
             log.info("Web Application Server started {} port.", port);
@@ -372,6 +372,69 @@
 3. 지금 응답을 하는 방법은 response200Header 와 responseBody 로 응답을 한다.  
    그렇다며 이 응답하는 코드들부터 분석해보자.  
    원래 알긴했었지만 오랜만에 보니 다시 분석해봐야할 것 같다.  
+4. 아래 글을 참고했다.  
+   https://resian-programming.tistory.com/57
+5. 위 글을 참고해보니 보통은 요청에 헤더와 바디가 존재해야하지만 302 리다이렉션은 예외라고 한다.  
+   바디가 따로 필요없고 헤더만 존재하면 된다고 한다.  
+   그 이유는 리다이렉션은 요청을 한번 더 보내는 것이기 때문이라고 한다.  
+   예를 들어 index.html 로 보내는 리다이렉션을 만들어야 한다면, 응답으로 index.html 을 보내는게 아니다.  
+   대신, 내가 대신해서 index.html 로 요청을 보내주는 것이다.   
+   그러면 서버에서는 index.html에 대한 요청을 받았으니 그에 대한 응답을 보내주는 것이다.  
+   * 처음에는 이해가 되지 않았지만 이렇게 요청과 응답을 확실하게 구분하는게 개발입장에서는 명확하기에 좋은 것 같다. 
+6. 200과는 다르게 헤더에 http code 와 Location만 넣어주면 된다.  
+   ```java
+   private void response302Header(DataOutputStream dos) {
+        try {
+            String location = "/index.html";
+
+            dos.writeBytes("HTTP/1.1 302 Found \r\n");
+            dos.writeBytes("Location: "+ location);
+            dos.writeBytes("\r\n");
+
+            log.info("Location : {}", location);
+        } catch (IOException e) {
+            log.error(e.getMessage());
+        }
+    }
+   ```
+   이제 회원가입 요청이 들어왔을 때만 302header 메소드가 작동되게 조건을 준다.  
+   ```java
+   // 아래와 같이 조건을 주어 회원가입 요청일 때만 302 리다이렉션을 실행시킴
+   
+   DataOutputStream dos = new DataOutputStream(out);
+   
+   if (url_suffix[0].equals("/user/create") ) {
+                response302Header(dos);
+   }else{
+                byte[] body = Files.readAllBytes(new File("./webapp" + url).toPath());
+                log.info("Path: {}",new File("./webapp" + url).toPath());
+                response200Header(dos, body.length);
+                responseBody(dos, body);
+   }  
+   
+   ```
+   이렇게 하면 화면이 index.html 로 잘 간다
+7. 그러면 헤더의 코드를 302가 아닌 200으로 바꾸면 어떻게 될까? 잘될까??  
+   ```java
+   // 302 코드를 200코드로 바꾼 모습
+   
+   private void response302Header(DataOutputStream dos) {
+        try {
+            String location = "/index.html";
+
+            dos.writeBytes("HTTP/1.1 200 Found \r\n");
+            dos.writeBytes("Location: "+ location);
+            dos.writeBytes("\r\n");
+
+            log.info("Location : {}", location);
+        } catch (IOException e) {
+            log.error(e.getMessage());
+        }
+   }
+   ```
+   ![img.png](img.png)
+   위 사진과 같이 하얀 화면만 나오고 제대로 처리는 되지 않는다.
+
 
 ### 요구사항 5 - cookie
 * 
