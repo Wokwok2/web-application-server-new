@@ -77,7 +77,6 @@ public class RequestHandler extends Thread {
             }
 
 
-
             // OutStream을 통해 응답 출력
             DataOutputStream dos = new DataOutputStream(out);
             byte[] body = Files.readAllBytes(new File("./webapp" + url).toPath());

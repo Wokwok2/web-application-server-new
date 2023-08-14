@@ -29,11 +29,11 @@
 * 클라이언트 소켓 사용 방법
   Socket socket = new Socket(서버 아이피, 서버 포트번호);
 
-> 참조 : https://juyoung-1008.tistory.com/19
----
+   > 참조 : https://juyoung-1008.tistory.com/19
+
 ### 요구사항 1 - http://localhost:8080/index.html로 접속시 응답
 
----
+
 1. 요청을 하나씩 읽어야 한다. 요청은 다음과 같이 들어온다고 한다. hi.
    
      ``` http request
@@ -49,14 +49,14 @@
    	log.debug("New Client Connect! Connected IP : {}, Port : {}", connection.getInetAddress
    	connection.getPort());
    
-	try (InputStream in = connection.getInputStream(); OutputStream out = connection.getOutputStream()) {
+   try (InputStream in = connection.getInputStream(); OutputStream out = connection.getOutputStream()) {
 	      // TODO 사용자 요청에 대한 처리는 이 곳에 구현하면 된다.
 	      DataOutputStream dos = new DataOutputStream(out);
 	      byte[] body = "Hello World".getBytes();
 	      response200Header(dos, body.length);
 	      responseBody(dos, body);
-	} catch (IOException e) {
-		log.error(e.getMessage());
+   } catch (IOException e) {
+       log.error(e.getMessage());
 	}
    }
    ```
@@ -155,8 +155,6 @@
          
 
 ### 요구사항 2 - get 방식으로 회원가입
-
----
 
 1. get 방식으로 회원가입 요청이 들어오기에 url에서 파리미터를 분리해야한다.  
    아래와 같은 방법으로 구분했다.  
@@ -363,9 +361,17 @@
    log.info("User : {}", user);
    ```
    
+
 ### 요구사항 4 - redirect 방식으로 이동
 * 회원가입이 완료된 후 /index.html 로 이동해야 한다.  
 * 이 때, 응답 헤더의 status code를 200이 아니라 302를 사용해야 한다.
+1. 이번에는 별다른 메소드를 주지 않았다. 그렇다며 내가 직접 리다이렉션 하는 방법을 찾아야 한다.  
+2. 우선 구현해야되는 리다이렉션의 정의를 알아보자.  
+   * 리다이렉션이란 사용자가 특정 페이지에 접근했을 때, 의도적으로 다른 페이지로 이동시키는 방법이다.  
+   * 우리는 지금 이것을 이용해서 index.html 로 화면을 이동시켜야 한다.
+3. 지금 응답을 하는 방법은 response200Header 와 responseBody 로 응답을 한다.  
+   그렇다며 이 응답하는 코드들부터 분석해보자.  
+   원래 알긴했었지만 오랜만에 보니 다시 분석해봐야할 것 같다.  
 
 ### 요구사항 5 - cookie
 * 
