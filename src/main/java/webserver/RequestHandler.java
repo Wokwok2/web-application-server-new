@@ -103,15 +103,14 @@ public class RequestHandler extends Thread {
             log.error(e.getMessage());
         }
     }
+    // 302 리다이렉션을 보내는 메소드
    private void response302Header(DataOutputStream dos) {
         try {
             String location = "/index.html";
 
-            dos.writeBytes("HTTP/1.1 200 Found \r\n");
+            dos.writeBytes("HTTP/1.1 302 Found \r\n");
             dos.writeBytes("Location: "+ location);
             dos.writeBytes("\r\n");
-
-            log.info("Location : {}", location);
         } catch (IOException e) {
             log.error(e.getMessage());
         }

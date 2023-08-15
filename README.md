@@ -437,8 +437,32 @@
 
 
 ### 요구사항 5 - cookie
-* 
-
+* 로그인을 성공하면 /index.html로 이동하고, 로그인이 실패하면 /user/login_failed.html로 이동해야 한다.  
+* 회원가입한 사용자 정보로 로그인할 수 있어야 한다. 로그인이 성공하면 쿠키를 활용해 로그인 상태를 유지할 수 있어야 한다.
+* 로그인 성공 시 HTTP 응답 헤더에 Set-Cookie를 추가해 로그인 성공 여부를 전달한다.  
+   응답 헤더의 예시
+  ```http request
+  HTTP/1.1 200 OK
+  Content-Type: text/html
+  Set-Cookie:  logined=true
+  ```
+* 위와 같이 응답을 보내면 브라우저는 다음과 같이 HTTP 요청 헤더에 Cookie값으로 전달한다.  
+  이렇게 전달 받은 Cookie 값으로 로그인 유무를 판단한다.
+  다음 요청에 대한 요청 헤더 예시  
+  ```http request
+  GET /index.html HTTP/1.1
+  Host: localhost:8080
+  Connection: kepp-alive
+  Accept: */*
+  Cookie: logined=true
+  ```
+* 정상적으로 로그인 되었는지 확인하려면 앞 단계에서 회원가입한 데이터를 유지해야한다.  
+  회원가입할 때 생성한 User 객체를 DataBase.addUser() 메소드를 사용해서 저장한다. 
+* 아이디와 비밀번호가 같은지를 확인해, 로그인이 성공하면 응답 헤더의 Set-Cookie 값을 logined=true, 로그인이 실패할 경우 Set-Cookie 값을 logined=false로 설정한다.  
+* 응답 헤더에 Set-Cookie 값을 설정한 후 요청 헤더에 Cookie 값이 전달되는지 확인한다.
+* 간단하게 정리한 구조도
+   ![img_1.png](img_1.png)
+1. 위에서 말한 DataBase.addUser() 메소드부터 알아보자.
 ### 요구사항 6 - stylesheet 적용
 * 
 
