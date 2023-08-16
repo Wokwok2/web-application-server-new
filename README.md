@@ -463,6 +463,19 @@
 * 간단하게 정리한 구조도
    ![img_1.png](img_1.png)
 1. 위에서 말한 DataBase.addUser() 메소드부터 알아보자.
+2. DataBase.addUser() 메소드는 static 메소드로 static 변수인 user에 아이디를 저장하는 기능을 한다.  
+   변수 user는 Map 타입이기에 put, get 메소드를 사용해 아이디를 저장하는 것이다.  
+   물론 DB에 저장한게 아니기에 다시 실행시키면 초기화될 것이다.
+   ```java
+   public class DataBase { 
+    private static Map<String, User> users = Maps.newHashMap();
+
+    public static void addUser(User user) {
+        users.put(user.getUserId(), user);
+    }
+   }
+   ```
+3. 
 ### 요구사항 6 - stylesheet 적용
 * 
 
