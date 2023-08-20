@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import db.DataBase;
 import model.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -74,6 +75,7 @@ public class RequestHandler extends Thread {
 
                 User user = new User(userId, password, name, email);
                 log.info("User : {}", user);
+                DataBase.addUser(user);
             }
 
             // OutStream을 통해 응답 출력

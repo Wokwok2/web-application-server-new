@@ -475,7 +475,14 @@
     }
    }
    ```
-3. 
+3. 회원가입한 User 객체를 DataBase.addUser() 메소드를 사용해 회원가입하자.
+   ````java
+   User user = new User(userId, password, name, email);
+   log.info("User : {}", user);
+   // addUser 를 사용해 회원가입한 유저의 정보를 저장했다. 
+   DataBase.addUser(user);
+   ````
+4. 
 ### 요구사항 6 - stylesheet 적용
 * 
 
