@@ -1,6 +1,7 @@
 package webserver;
 
 
+import db.DataBase;
 import model.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,5 +36,13 @@ public class RequestHandlerTest {
 
         User user = new User(userId, password, name, email);
 //        assertThat(user).isEqualTo(new User("test01", "test01", "", ""));
+    }
+
+    @Test
+    public void 아이디찾기메소드_확인() {
+        User user = new User("test01", "test01", "", "");
+        DataBase.addUser(user);
+
+        assertThat(user).isEqualTo(DataBase.findUserById("test01"));
     }
 }

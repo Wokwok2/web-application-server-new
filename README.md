@@ -482,7 +482,18 @@
    // addUser 를 사용해 회원가입한 유저의 정보를 저장했다. 
    DataBase.addUser(user);
    ````
-4. 
+4. 회원가입을 했을 때 회원가입이 제대로 되었는지를 확인하고 싶다. 이를 위해서 테스트 코드를 사용하자.  
+   ```java
+   @Test
+    public void 아이디찾기메소드_확인() {
+        User user = new User("test01", "test01", "", "");
+        DataBase.addUser(user);
+
+        assertThat(user).isEqualTo(DataBase.findUserById("test01"));
+    }
+   ```
+   위와 같이 테스트를 해보니 회원 가입이 제대로 되었고, 그것을 확인하는 findUserById 메소드도 문제없이 작동하는 것을 확인하였다.  
+5. 그럼 이제 로그인 기능을 구현해보자.
 ### 요구사항 6 - stylesheet 적용
 * 
 
