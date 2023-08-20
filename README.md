@@ -493,7 +493,23 @@
     }
    ```
    위와 같이 테스트를 해보니 회원 가입이 제대로 되었고, 그것을 확인하는 findUserById 메소드도 문제없이 작동하는 것을 확인하였다.  
-5. 그럼 이제 로그인 기능을 구현해보자.
+5. 그럼 이제 로그인 기능을 구현해보자. 로그인 기능의 url 은 "user/login" 이고 Body에 아이디와 패스워드를 담아서 요청을 보낸다.  
+   HTTP 메소드는 POST 일 것이다.  
+   회원가입 때처럼 해당 url이 들어오면 요청을 가로채는 방법으로 진행하자.  
+6. 일단 테스트부터 해보자.
+   ```java
+   // 로그인 요청이 들어올 때
+   else if (url_suffix[0].equals("/user/login") ) { 
+        log.info("회원가입 요청이 들어왔씁니다!! : {}", DataBase.findUserById("test01"));
+   }
+   ```
+   만약 회원가입을 안했다면 로그에서 null이 출력된다.  
+   회원가입을 했다면 User 객체에 대한 정보가 출력된다.  
+   출력된 테스트 로그는 아래와 같다.
+   ```
+   회원가입 요청이 들어왔씁니다!! : User [userId=test01, password=test01, name=null, email=null]
+   ```
+7. 
 ### 요구사항 6 - stylesheet 적용
 * 
 
