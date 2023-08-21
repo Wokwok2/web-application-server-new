@@ -509,7 +509,9 @@
    ```
    회원가입 요청이 들어왔씁니다!! : User [userId=test01, password=test01, name=null, email=null]
    ```
-7. 
+7. 회원가입은 제대로 된다. 그럼 로그인 시 입력된 아이디와 패스워드가 회원가입 되어있는 정보와 동일한지 확인해야한다.  
+   일단 findUserById로 User 객체인 데이터를 가져와서 거기에 들어있는 아이디와 패스워드를 비교해보자.  
+   
 ### 요구사항 6 - stylesheet 적용
 * 
 
