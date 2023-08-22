@@ -511,7 +511,23 @@
    ```
 7. 회원가입은 제대로 된다. 그럼 로그인 시 입력된 아이디와 패스워드가 회원가입 되어있는 정보와 동일한지 확인해야한다.  
    일단 findUserById로 User 객체인 데이터를 가져와서 거기에 들어있는 아이디와 패스워드를 비교해보자.  
-   
+   POST 안에 로그인 데이터가 들어있을테니 회원가입 때처럼 body데이터를 가져오자.  
+   * 이를 위해서 body 데이터를 가져오는 방법을 다시 살펴보자.
+   * 아래 코드는 Body Data를 가져오는 코드다. contentLength의 길이만큼 데이터를 읽어온다. 
+      ```java
+     String bodyData = IOUtils.readData(br, contentLength);
+     
+     // readData 코드
+     public static String readData(BufferedReader br, int contentLength) throws IOException {
+        char[] body = new char[contentLength];
+        br.read(body, 0, contentLength);
+        return String.copyValueOf(body);
+     }
+     ```
+     원래 사용하던 readline() 을 사용하지 않고 read() 를 사용하고 있다.
+     read() 메소드는 한 문자씩 읽어오고, 읽을 값이 없으면 -1 을 반환한다. null 을 반환하는 readline() 과 다른점이다.  
+     줄바꿈 문자도 포함해서 읽기에 Body Data를 읽어오기에 적합하다. 
+     
 ### 요구사항 6 - stylesheet 적용
 * 
 

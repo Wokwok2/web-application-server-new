@@ -80,15 +80,14 @@ public class RequestHandler extends Thread {
 
             // 로그인 요청이 들어올 때
             else if (url_suffix[0].equals("/user/login") ) {
-                log.info("회원가입 요청이 들어왔씁니다!! : {}", DataBase.findUserById("test01"));
                 String bodyData = IOUtils.readData(br, contentLength);
                 log.info("bodyData: {}",bodyData);
                 Map<String, String> paramMap = HttpRequestUtils.parseQueryString(bodyData);
 
-
+                log.info("회원가입 요청이 들어왔씁니다!! : {}", DataBase.findUserById(paramMap.get("name")));
             }
 
-            
+
             // OutStream을 통해 응답 출력
             DataOutputStream dos = new DataOutputStream(out);
 
