@@ -6,6 +6,7 @@ import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 import db.DataBase;
 import model.User;
@@ -62,11 +63,13 @@ public class RequestHandler extends Thread {
                 line = br.readLine();
             }
 
+            String cookie = "";
+
             // 회원가입 요청이 들어올 때
             if (url_suffix[0].equals("/user/create") ) {
                 String bodyData = IOUtils.readData(br, contentLength);
-                log.info("bodyData: {}",bodyData);
                 Map<String, String> paramMap = HttpRequestUtils.parseQueryString(bodyData);
+                log.info("paramMap: {}",paramMap);
 
                 String userId = (String) paramMap.get("userId");
                 String password = (String) paramMap.get("password");
@@ -78,28 +81,54 @@ public class RequestHandler extends Thread {
                 DataBase.addUser(user);
             }
 
+
             // 로그인 요청이 들어올 때
             else if (url_suffix[0].equals("/user/login") ) {
                 String bodyData = IOUtils.readData(br, contentLength);
-                log.info("bodyData: {}",bodyData);
                 Map<String, String> paramMap = HttpRequestUtils.parseQueryString(bodyData);
 
-                log.info("회원가입 요청이 들어왔씁니다!! : {}", DataBase.findUserById(paramMap.get("name")));
-            }
+                log.info("paramMap: {}",paramMap);
+                log.info("findUser: {}",DataBase.findUserById(paramMap.get("userId")));
+                if (DataBase.findUserById(paramMap.get("userId")) != null) {
+                    User findUser = DataBase.findUserById(paramMap.get("userId"));
 
+                    if (findUser.getPassword().equals(paramMap.get("password"))) {
+                        log.info("sucess");
+                        cookie = "logined=true";
+                    }else{
+                        log.info("fail");
+                        cookie = "logined=false";
+                    }
+                }
+            }
 
             // OutStream을 통해 응답 출력
             DataOutputStream dos = new DataOutputStream(out);
 
             if (url_suffix[0].equals("/user/create") ) {
                 response302Header(dos);
-            }else{
+            } else if (url_suffix[0].equals("/user/login") ) {
+                log.info("cookie: {}",cookie);
+                log.info("Path: {}",new File("./webapp" + url).toPath());
+                response200HeaderCookie(dos, cookie);
+            } else{
                 byte[] body = Files.readAllBytes(new File("./webapp" + url).toPath());
                 log.info("Path: {}",new File("./webapp" + url).toPath());
                 response200Header(dos, body.length);
                 responseBody(dos, body);
             }
 
+        } catch (IOException e) {
+            log.error(e.getMessage());
+        }
+    }
+
+    private void response200HeaderCookie(DataOutputStream dos, String cookie) {
+        try {
+            dos.writeBytes("HTTP/1.1 200 OK \r\n");
+            dos.writeBytes("Content-Type: text/html;\r\n");
+            dos.writeBytes("Set-Cookie: " + cookie + "\r\n");
+            dos.writeBytes("\r\n");
         } catch (IOException e) {
             log.error(e.getMessage());
         }
@@ -115,6 +144,7 @@ public class RequestHandler extends Thread {
             log.error(e.getMessage());
         }
     }
+
     // 302 리다이렉션을 보내는 메소드
    private void response302Header(DataOutputStream dos) {
         try {

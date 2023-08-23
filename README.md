@@ -527,7 +527,24 @@
      원래 사용하던 readline() 을 사용하지 않고 read() 를 사용하고 있다.
      read() 메소드는 한 문자씩 읽어오고, 읽을 값이 없으면 -1 을 반환한다. null 을 반환하는 readline() 과 다른점이다.  
      줄바꿈 문자도 포함해서 읽기에 Body Data를 읽어오기에 적합하다. 
-     
+   * String 으로 된 쿼리스트링을 받아온 후 HttpRequestUtils.parseQueryString 을 통해 Map 형태의 값으로 변환한다.  
+     ```java
+        public static Map<String, String> parseQueryString(String queryString) {
+           return parseValues(queryString, "&");
+        }
+
+       private static Map<String, String> parseValues(String values, String separator) {
+           if (Strings.isNullOrEmpty(values)) {
+               return Maps.newHashMap();
+           }
+
+           String[] tokens = values.split(separator);
+           return Arrays.stream(tokens).map(t -> getKeyValue(t, "=")).filter(p -> p != null)
+                   .collect(Collectors.toMap(p -> p.getKey(), p -> p.getValue()));
+       }
+     ```
+8. body 데이터를 어떻게 가져오는지 다시 한번 살펴봤다. 그럼 이제 로그인 정보가 들어왔을 때 아이디로 객체를 가져오고,  
+   가져와지면 그 객체의 password 와 비교를 해보자.
 ### 요구사항 6 - stylesheet 적용
 * 
 
