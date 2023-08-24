@@ -545,6 +545,30 @@
      ```
 8. body 데이터를 어떻게 가져오는지 다시 한번 살펴봤다. 그럼 이제 로그인 정보가 들어왔을 때 아이디로 객체를 가져오고,  
    가져와지면 그 객체의 password 와 비교를 해보자.
+   로그인 요청이 들어오면 위에 작성한 것과 같이 body 데이터를 불러오고 paramMap에 저장한다.  
+   그것을 findUserById 로 값이 있는지 체크한다.
+   ```java
+   if (DataBase.findUserById(paramMap.get("userId")) != null) {
+        User findUser = DataBase.findUserById(paramMap.get("userId"));
+   }
+   ```
+   그리고 값이 있으면 위와 같이 User타입 참조변수 findUser에 해당 값을 저장한다.
+9. 그리고 비밀번호가 같다면 String cookie = "logined=true" 를 저장하고, 없다면 String cookie = "logined=false" 를 저장하자.  
+   ````java
+   if (DataBase.findUserById(paramMap.get("userId")) != null) {
+        User findUser = DataBase.findUserById(paramMap.get("userId"));
+
+        if (findUser.getPassword().equals(paramMap.get("password"))) {
+                        log.info("sucess");
+                        // 로그인 성공 시 cookie 변수에 저장
+                        cookie = "logined=true";
+        }else{
+                        log.info("fail");
+                        cookie = "logined=false";
+        }
+   }
+   ````
+
 ### 요구사항 6 - stylesheet 적용
 * 
 
