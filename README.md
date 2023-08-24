@@ -568,7 +568,27 @@
         }
    }
    ````
+10. 응답헤더를 만들 시간이다. 우선 응답을 아직 어떻게 해야할지 결정이 안됐다. 그리고 쿠키를 넣어줘야하기에 새로운 헤더 메소드를 만들었다.  
+    response200HeaderCookie 헤더를 사용해 쿠키를 세팅해줬다.  
+   ```java
+  else if (url_suffix[0].equals("/user/login") ) {
+        response200HeaderCookie(dos, cookie);
+  }
 
+   private void response200HeaderCookie(DataOutputStream dos, String cookie) {
+        try {
+            dos.writeBytes("HTTP/1.1 200 OK \r\n");
+            dos.writeBytes("Content-Type: text/html;\r\n");
+            dos.writeBytes("Set-Cookie: " + cookie + "\r\n");
+            dos.writeBytes("\r\n");
+        } catch (IOException e) {
+            log.error(e.getMessage());
+        }
+   }
+   ```
+11. 이제 로그인 요청을 보내면 응답 헤더에는 Set-Cooie 가 들어가 있고, 요청헤더에는 Cookie 값으로 logined=true 가 들어간 것을 확인할 수 있다.
+   ![img_2.png](img_2.png)
+12. 회원가입되어있지 않은 계정으로 로그인하면 어떻게 될까?
 ### 요구사항 6 - stylesheet 적용
 * 
 
