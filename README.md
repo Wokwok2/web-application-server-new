@@ -589,6 +589,27 @@
 11. 이제 로그인 요청을 보내면 응답 헤더에는 Set-Cooie 가 들어가 있고, 요청헤더에는 Cookie 값으로 logined=true 가 들어간 것을 확인할 수 있다.
    ![img_2.png](img_2.png)
 12. 회원가입되어있지 않은 계정으로 로그인하면 어떻게 될까?
+   현재로서는 아이디가 존재할 때만 조건문을 타게 되어있다. 그리고 그 안에 로그인 실패 쿠키가 들어있기에 지금은 로그인 실패 시 아무런 쿠키도 세팅되지 않는다. 
+   그렇기에 이 fail 일때의 쿠키를 밖으로 뺄 것이다.  
+   ```java
+   if (DataBase.findUserById(paramMap.get("userId")) != null) {
+                    User findUser = DataBase.findUserById(paramMap.get("userId"));
+
+                    if (findUser.getPassword().equals(paramMap.get("password"))) {
+                        log.info("sucess");
+                        cookie = "logined=true";
+                    }else{
+                        log.info("fail");
+                        cookie = "logined=false";
+                    }
+                }else{
+                    log.info("fail");
+                    cookie = "logined=false";
+   }
+   ```
+   위와 같이 else를 탈 때마다 false값을 세팅해주었다. 그래서 아래와 같이 문제없이 결과값이 출력된다.  
+   ![img_3.png](img_3.png)
+   
 ### 요구사항 6 - stylesheet 적용
 * 
 

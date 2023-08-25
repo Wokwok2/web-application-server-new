@@ -99,6 +99,9 @@ public class RequestHandler extends Thread {
                         log.info("fail");
                         cookie = "logined=false";
                     }
+                }else{
+                    log.info("fail");
+                    cookie = "logined=false";
                 }
             }
 
