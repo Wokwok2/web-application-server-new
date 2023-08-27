@@ -609,8 +609,15 @@
    ```
    위와 같이 else를 탈 때마다 false값을 세팅해주었다. 그래서 아래와 같이 문제없이 결과값이 출력된다.  
    ![img_3.png](img_3.png)
+
+
+### 요구사항 6 - 사용자 목록 출력 적용
+* 접근하고 있는 사용자가 로그인 상태(logined=true) 일 때 http://localhost:8080/user/list 로 접근했을 때 사용자 목록을 출력한다.  
+  만약 로그인하지 않은 상태라면 로그인 페이지(login.html) 로 이동한다.
+* 로그인 여부를 판단하기 위해 Cookie값을 꺼내서 파싱해야한다. 이 과정은 util.Http.RequestUtils 클래스의 parseCookies() 메소드를 활용한다고 한다  
+* 자바 클래스인 StringBuilder 를 활용하면 사용자 목록을 사용할 수 있다.
    
-### 요구사항 6 - stylesheet 적용
+### 요구사항 7 - stylesheet 적용
 * 
 
 ### heroku 서버에 배포 후
