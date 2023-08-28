@@ -633,7 +633,27 @@
     }
    ```
    파라미터로 쿠키를 사용해야 하기에 우선 쿠키를 꺼내는 방법을 알아보자.
-2. 로그인 후 쿠키를 꺼내야 한다. http://localhost:8080/user/list 요청을 보낼 때 요청 헤더를 읽어서 쿠키를 꺼내면 될 것 같다.
+2. 로그인 후 쿠키를 꺼내야 한다. http://localhost:8080/user/list 요청을 보낼 때 요청 헤더를 읽어서 쿠키를 꺼내면 될 것 같다.  
+   아래처럼 요청 헤더 안에 "logined=" 라는 텍스트가 있으면 로그인 관련 헤더라고 생각하고 split 해서 cookieValue 에 값을 저장했다.
+   ```java
+   while(!"".equals(line)){
+   
+        if(line.contains("Content-Length")){
+                    String[] lengthArray = line.split(" ");
+                    contentLength = Integer.parseInt(lengthArray[1]);
+        }
+                if(line.contains("logined=")){
+                    String[] cookieValues = line.split(" ");
+                    String cookieValue = cookieValues[1];
+                    log.info("cookieValue : {}",cookieValue);
+        }
+        
+        log.info("{}",line);
+        line = br.readLine();
+   }
+   ```
+   그런데 문제는 split을 공백인 " " 로 해서 뒤에 있던 쿠키까지 사라진다는 점이다.  
+   다른 쿠키가 사라지면 좋다고 생각할 수 있다. 하지만 그 뒤에 있는게 "logined=" 쿠키가 될 수도 있으니 문제인 것이다.  
    
 ### 요구사항 7 - stylesheet 적용
 * 
