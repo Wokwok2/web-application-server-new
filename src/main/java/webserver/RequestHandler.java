@@ -59,6 +59,10 @@ public class RequestHandler extends Thread {
                     String[] lengthArray = line.split(" ");
                     contentLength = Integer.parseInt(lengthArray[1]);
                 }
+                if(line.contains("Cookie:")){
+                    String cookieValue = line;
+                    log.info("cookieValue : {}",cookieValue);
+                }
                 log.info("{}",line);
                 line = br.readLine();
             }

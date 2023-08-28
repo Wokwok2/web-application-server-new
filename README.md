@@ -615,7 +615,25 @@
 * 접근하고 있는 사용자가 로그인 상태(logined=true) 일 때 http://localhost:8080/user/list 로 접근했을 때 사용자 목록을 출력한다.  
   만약 로그인하지 않은 상태라면 로그인 페이지(login.html) 로 이동한다.
 * 로그인 여부를 판단하기 위해 Cookie값을 꺼내서 파싱해야한다. 이 과정은 util.Http.RequestUtils 클래스의 parseCookies() 메소드를 활용한다고 한다  
-* 자바 클래스인 StringBuilder 를 활용하면 사용자 목록을 사용할 수 있다.
+* 자바 클래스인 StringBuilder 를 활용하면 사용자 목록을 사용할 수 있다. 
+1. 쿠키 값을 파싱한다고 하길래 parseCookies 를 봤다. 
+   ```java
+   public static Map<String, String> parseCookies(String cookies) {
+        return parseValues(cookies, ";");
+    }
+    
+   private static Map<String, String> parseValues(String values, String separator) {
+        if (Strings.isNullOrEmpty(values)) {
+            return Maps.newHashMap();
+        }
+
+        String[] tokens = values.split(separator);
+        return Arrays.stream(tokens).map(t -> getKeyValue(t, "=")).filter(p -> p != null)
+                .collect(Collectors.toMap(p -> p.getKey(), p -> p.getValue()));
+    }
+   ```
+   파라미터로 쿠키를 사용해야 하기에 우선 쿠키를 꺼내는 방법을 알아보자.
+2. 로그인 후 쿠키를 꺼내야 한다. http://localhost:8080/user/list 요청을 보낼 때 요청 헤더를 읽어서 쿠키를 꺼내면 될 것 같다.
    
 ### 요구사항 7 - stylesheet 적용
 * 
