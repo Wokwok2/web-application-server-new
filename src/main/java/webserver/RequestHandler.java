@@ -60,7 +60,7 @@ public class RequestHandler extends Thread {
                     contentLength = Integer.parseInt(lengthArray[1]);
                 }
                 if(line.contains("logined=")){
-                    String[] cookieValues = line.split(" ");
+                    String[] cookieValues = line.split(":");
                     String cookieValue = cookieValues[1];
                     log.info("cookieValue : {}",cookieValue);
                 }

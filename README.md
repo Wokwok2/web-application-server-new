@@ -612,11 +612,13 @@
 
 
 ### 요구사항 6 - 사용자 목록 출력 적용
-* 접근하고 있는 사용자가 로그인 상태(logined=true) 일 때 http://localhost:8080/user/list 로 접근했을 때 사용자 목록을 출력한다.  
-  만약 로그인하지 않은 상태라면 로그인 페이지(login.html) 로 이동한다.
-* 로그인 여부를 판단하기 위해 Cookie값을 꺼내서 파싱해야한다. 이 과정은 util.Http.RequestUtils 클래스의 parseCookies() 메소드를 활용한다고 한다  
-* 자바 클래스인 StringBuilder 를 활용하면 사용자 목록을 사용할 수 있다. 
-1. 쿠키 값을 파싱한다고 하길래 parseCookies 를 봤다. 
+* 접근하고 있는 사용자가 로그인 상태(logined=true) 일 때 http://localhost:8080/user/list 로 요청을 하면 사용자 목록을 출력합니다.  
+  만약 로그인하지 않은 상태라면 로그인 페이지(login.html) 로 이동합니다.
+* 로그인 여부를 판단하기 위해 Cookie값을 꺼내서 파싱 해야합니다. 이 과정은 util.Http.RequestUtils 클래스의 parseCookies() 메소드를 활용한다고 한다  
+* 자바 클래스인 StringBuilder 를 활용하면 사용자 목록을 사용할 수 있다.
+
+### 쿠키 값 파싱
+1. 쿠키 값을 파싱하기 위해 parseCookies() 를 살펴보겠습니다. 
    ```java
    public static Map<String, String> parseCookies(String cookies) {
         return parseValues(cookies, ";");
@@ -632,9 +634,11 @@
                 .collect(Collectors.toMap(p -> p.getKey(), p -> p.getValue()));
     }
    ```
-   파라미터로 쿠키를 사용해야 하기에 우선 쿠키를 꺼내는 방법을 알아보자.
-2. 로그인 후 쿠키를 꺼내야 한다. http://localhost:8080/user/list 요청을 보낼 때 요청 헤더를 읽어서 쿠키를 꺼내면 될 것 같다.  
-   아래처럼 요청 헤더 안에 "logined=" 라는 텍스트가 있으면 로그인 관련 헤더라고 생각하고 split 해서 cookieValue 에 값을 저장했다.
+   위 메소드를 보면 파라미터로 쿠키를 사용하고 있습니다.  
+   파라미터에 넣기 위해 헤더에서 쿠키를 꺼내는 방법을 알아보겠습니다. <br/><br/>
+
+2. 로그인 후 쿠키를 헤더에서 꺼내야 합니다. http://localhost:8080/user/list 요청을 보낼 때 요청 헤더를 읽어서 쿠키를 꺼내면 될 것 같습니다.  
+   
    ```java
    while(!"".equals(line)){
    
@@ -642,7 +646,7 @@
                     String[] lengthArray = line.split(" ");
                     contentLength = Integer.parseInt(lengthArray[1]);
         }
-                if(line.contains("logined=")){
+        if(line.contains("logined=")){
                     String[] cookieValues = line.split(" ");
                     String cookieValue = cookieValues[1];
                     log.info("cookieValue : {}",cookieValue);
@@ -652,9 +656,39 @@
         line = br.readLine();
    }
    ```
-   그런데 문제는 split을 공백인 " " 로 해서 뒤에 있던 쿠키까지 사라진다는 점이다.  
-   다른 쿠키가 사라지면 좋다고 생각할 수 있다. 하지만 그 뒤에 있는게 "logined=" 쿠키가 될 수도 있으니 문제인 것이다.  
+   위 코드처럼 요청 헤더 안에 "logined=" 라는 텍스트가 있으면 로그인 관련 헤더라고 생각했습니다.
+   그래서 그 값을 split 해서 cookieValue 에 값을 저장했습니다.<br/><br/>  
    
+   그런데 문제는 split을 공백인 " " 로 해서 뒤에 있던 쿠키까지 사라진다는 점이였습니다.  
+   다른 쿠키가 사라지면 내가 logined 쿠키만 남기에 좋다고 생각할 수 있습니다. 
+   하지만 그 뒤에 있는게 "logined=" 쿠키가 될 수도 있기에 문제가 되었습니다.    
+   <br/>
+   그래서 " " 로 split을 하는게 아닌 " : " 로 하였습니다. 그러니 잘 나뉘어졌습니다.     
+   ```
+   cookieValue :  logined=true; Idea-d7277364=a137e75f-faa7-4bf5-9928-4405c93dd294
+   ```
+3. 쿠키를 헤더에서 추출하는 작업을 완료했습니다. 이제 이것을 위에서 본 parseCookies 메소드로 파싱을 하겠습니다.
+   파싱하기 전에 파싱하는 코드를 파악해보겠습니다.
+   <br/>
+   
+   ```java
+   public static Map<String, String> parseCookies(String cookies) {
+        return parseValues(cookies, ";");
+    }
+   ```
+   parseCookies 메소드는 parseValue의 리턴값을 다시 리턴합니다.
+   parseValue 는 파라미터로 쿠키와 ";" 를 갖습니다.<br/>
+   
+   parseValues 메소드는 파라미터로 받은 cookie의 값이 null 인지 비어있는 값인지 String.isNullOrEmpty 로 확인한다.  
+   위 메소드는 자바 기본 메소드인 것 같습니다.
+   
+   ```java
+   if (Strings.isNullOrEmpty(values)) {
+        return Maps.newHashMap();
+   }
+   ```
+   null 이거나 비어있으면 비어있는 Map 데이터를 만들어서 리턴해줍니다.
+4. 
 ### 요구사항 7 - stylesheet 적용
 * 
 
