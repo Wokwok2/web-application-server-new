@@ -59,7 +59,9 @@ public class RequestHandler extends Thread {
                     String[] lengthArray = line.split(" ");
                     contentLength = Integer.parseInt(lengthArray[1]);
                 }
-                if(line.contains("logined=")){
+                // 요청 헤더에 Cookie 라는 텍스트가 들어있을 때
+                // Cookie 에 들어있는 값 들을 추출한다.
+                if(line.contains("Cookie")){
                     String[] cookieValues = line.split(":");
                     String cookieValue = cookieValues[1];
                     log.info("cookieValue : {}",cookieValue);
@@ -85,22 +87,21 @@ public class RequestHandler extends Thread {
                 log.info("User : {}", user);
                 DataBase.addUser(user);
             }
-
-
             // 로그인 요청이 들어올 때
             else if (url_suffix[0].equals("/user/login") ) {
                 String bodyData = IOUtils.readData(br, contentLength);
                 Map<String, String> paramMap = HttpRequestUtils.parseQueryString(bodyData);
 
-                log.info("paramMap: {}",paramMap);
-                log.info("findUser: {}",DataBase.findUserById(paramMap.get("userId")));
                 if (DataBase.findUserById(paramMap.get("userId")) != null) {
                     User findUser = DataBase.findUserById(paramMap.get("userId"));
 
+                    // 로그인 성공 시 쿠키에 logined=true 값을 추가하기 위해 세팅
                     if (findUser.getPassword().equals(paramMap.get("password"))) {
                         log.info("sucess");
                         cookie = "logined=true";
-                    }else{
+                    }
+                    // 로그인 실패 시 쿠키에 logined=false 값을 추가하기 위해 세팅
+                    else{
                         log.info("fail");
                         cookie = "logined=false";
                     }
@@ -109,17 +110,28 @@ public class RequestHandler extends Thread {
                     cookie = "logined=false";
                 }
             }
+            // 유저 리스트 요청이 들어올 때
+            else if (url_suffix[0].equals("/user/list")) {
+
+            }
 
             // OutStream을 통해 응답 출력
             DataOutputStream dos = new DataOutputStream(out);
 
+            // 회원가입 요청이 들어왔을 때의 응답 헤더 생성
             if (url_suffix[0].equals("/user/create") ) {
                 response302Header(dos);
-            } else if (url_suffix[0].equals("/user/login") ) {
+            }
+            // 로그인 요청이 들어왔을 때의 응답 헤더 생성
+            // 쿠키에 logined= 값을 세팅해줌
+            else if (url_suffix[0].equals("/user/login") ) {
                 log.info("cookie: {}",cookie);
                 log.info("Path: {}",new File("./webapp" + url).toPath());
+
                 response200HeaderCookie(dos, cookie);
-            } else{
+            }
+            // 일반 응답 헤더 생성
+            else{
                 byte[] body = Files.readAllBytes(new File("./webapp" + url).toPath());
                 log.info("Path: {}",new File("./webapp" + url).toPath());
                 response200Header(dos, body.length);
