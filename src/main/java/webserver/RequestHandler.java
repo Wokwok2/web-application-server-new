@@ -112,7 +112,7 @@ public class RequestHandler extends Thread {
             }
             // 유저 리스트 요청이 들어올 때
             else if (url_suffix[0].equals("/user/list")) {
-
+                log.info("cookieValue : {}",cookieValue);
             }
 
             // OutStream을 통해 응답 출력
