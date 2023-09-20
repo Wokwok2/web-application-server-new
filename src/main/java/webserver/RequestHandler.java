@@ -15,6 +15,8 @@ import org.slf4j.LoggerFactory;
 import util.HttpRequestUtils;
 import util.IOUtils;
 
+import static util.HttpRequestUtils.parseCookies;
+
 public class RequestHandler extends Thread {
     private static final Logger log = LoggerFactory.getLogger(RequestHandler.class);
 
@@ -53,6 +55,7 @@ public class RequestHandler extends Thread {
             if (line == null) return;
 
             int contentLength = 0;
+            Map<String, String> cookies = new HashMap<>();
 
             while(!"".equals(line)){
                 if(line.contains("Content-Length")){
@@ -64,13 +67,14 @@ public class RequestHandler extends Thread {
                 if(line.contains("Cookie")){
                     String[] cookieValues = line.split(":");
                     String cookieValue = cookieValues[1];
-                    log.info("cookieValue : {}",cookieValue);
+                    cookies = parseCookies(cookieValue);
+
+                    log.info("cookies : {}",cookieValue);
                 }
                 log.info("{}",line);
                 line = br.readLine();
             }
 
-            String cookie = "";
 
             // 회원가입 요청이 들어올 때
             if (url_suffix[0].equals("/user/create") ) {
@@ -112,7 +116,7 @@ public class RequestHandler extends Thread {
             }
             // 유저 리스트 요청이 들어올 때
             else if (url_suffix[0].equals("/user/list")) {
-                log.info("cookieValue : {}",cookieValue);
+                log.info("cookies: {}",cookies);
             }
 
             // OutStream을 통해 응답 출력

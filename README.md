@@ -688,28 +688,53 @@
    }
    ```
    null 이거나 비어있으면 비어있는 Map 데이터를 만들어서 리턴해줍니다.
-4. 이제 사용자가 /user/list 로 요청을 보냈을 때 쿠키에서 로그인 정보를 꺼내와 보겠습니다.  
-   logined=true 인지 체크해야됩니다. <br/><br/>  
+   4. 이제 사용자가 /user/list 로 요청을 보냈을 때 쿠키에서 로그인 정보를 꺼내와 보겠습니다.  
+      logined=true 인지 체크해야됩니다. <br/><br/>  
 
-   해당 작업에 들어가기 전에 헤더에서 cookie를 추출하는 과정에 수정이 필요할 것 같습니다.  
-   <br/>
-   ``` java
-   if(line.contains("logined=")){ ... }
-   ```
-   현재는 위 코드처럼 bufferedReader.reaLine() 이 읽은 라인 안에 "logined=" 라는 텍스트가 읽으면 추출하고 있습니다.  
-   하지만 이런 방식은 나중에도 다른 쿠키를 읽어야 되는 소스를 작성할 때 재활용성이 떨어집니다. 오직 로그인할 때만 사용되기 때문입니다.  
-   <br/>
+      해당 작업에 들어가기 전에 헤더에서 cookie를 추출하는 과정에 수정이 필요할 것 같습니다.  
+      <br/>
+      ``` java
+      if(line.contains("logined=")){ ... }
+      ```
+      현재는 위 코드처럼 bufferedReader.reaLine() 이 읽은 라인 안에 "logined=" 라는 텍스트가 읽으면 추출하고 있습니다.  
+      하지만 이런 방식은 나중에도 다른 쿠키를 읽어야 되는 소스를 작성할 때 재활용성이 떨어집니다. 오직 로그인할 때만 사용되기 때문입니다.  
+      <br/>
    
-   ```java
-   if(line.contains("Cookie")){
-        ...
-   }
-   ```
-   그렇기에 헤더에 Cookie 라는 텍스트가 있을 때 추출하는 것으로 변경했습니다.  
-   이제 "logined" 말고 다른 쿠키들도 받아올 수 있게 되었습니다.  
-   <br/>
-   이제 위에서 파악한 parseCookies 메소드를 통해 쿠키 값을 파싱해보겠습니다.
+      ```java
+      if(line.contains("Cookie")){
+           ...
+      }
+      ```
+      그렇기에 헤더에 Cookie 라는 텍스트가 있을 때 추출하는 것으로 변경했습니다.  
+      이제 "logined" 말고 다른 쿠키들도 받아올 수 있게 되었습니다.  
+      <br/>
+      이제 위에서 파악한 parseCookies 메소드를 통해 쿠키 값을 파싱해보겠습니다.   
+      ```java
+      Map<String, String> cookies = new HashMap<>();
+
+               while(!"".equals(line)){
+                   if(line.contains("Content-Length")){
+                       String[] lengthArray = line.split(" ");
+                       contentLength = Integer.parseInt(lengthArray[1]);
+                   }
+                   // 요청 헤더에 Cookie 라는 텍스트가 들어있을 때
+                   // Cookie 에 들어있는 값 들을 추출한다.
+                   if(line.contains("Cookie")){
+                       String[] cookieValues = line.split(":");
+                       String cookieValue = cookieValues[1];
+                       cookies = parseCookies(cookieValue);
+
+                       log.info("cookies : {}",cookieValue);
+                   }
+                   log.info("{}",line);
+                   line = br.readLine();
+      }
    
+      ```
+      쿠키는 parseCookies 를 통해 Map 형식으로 리턴됩니다. 그렇기에 우선 Map 형식의 cookies 변수를 선언해줬습니다.   
+      그리고 br.line() 을 통해 Cookie 가 인식되면 parseCookies 메소드를 호출합니다.   
+   
+
    
    
 ### 요구사항 7 - stylesheet 적용
