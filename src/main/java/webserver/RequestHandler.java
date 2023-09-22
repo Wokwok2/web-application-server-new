@@ -57,6 +57,8 @@ public class RequestHandler extends Thread {
             int contentLength = 0;
             Map<String, String> cookies = new HashMap<>();
 
+
+
             while(!"".equals(line)){
                 if(line.contains("Content-Length")){
                     String[] lengthArray = line.split(" ");
@@ -66,15 +68,17 @@ public class RequestHandler extends Thread {
                 // Cookie 에 들어있는 값 들을 추출한다.
                 if(line.contains("Cookie")){
                     String[] cookieValues = line.split(":");
+
                     String cookieValue = cookieValues[1];
                     cookies = parseCookies(cookieValue);
 
-                    log.info("cookies : {}",cookieValue);
+                    log.info("cookies : {}",cookies);
                 }
                 log.info("{}",line);
                 line = br.readLine();
             }
 
+            String cookie = "";
 
             // 회원가입 요청이 들어올 때
             if (url_suffix[0].equals("/user/create") ) {
@@ -114,25 +118,26 @@ public class RequestHandler extends Thread {
                     cookie = "logined=false";
                 }
             }
-            // 유저 리스트 요청이 들어올 때
-            else if (url_suffix[0].equals("/user/list")) {
-                log.info("cookies: {}",cookies);
+            // /user/list.html 로 요청이 들어왔을 때
+            // Map 데이터인 cookies 의 logined 의 값이 false이면 url 을 login.html로 보낸다.
+            else if (url_suffix[0].equals("/user/list.html")) {
+                if (cookies.get("logined").equals("false")) {
+                    url = "/user/login.html";
+                }
             }
 
             // OutStream을 통해 응답 출력
             DataOutputStream dos = new DataOutputStream(out);
 
-            // 회원가입 요청이 들어왔을 때의 응답 헤더 생성
+            // 회원가입 요청이 들어왔을 때  index.html 리다이렉트
             if (url_suffix[0].equals("/user/create") ) {
                 response302Header(dos);
             }
-            // 로그인 요청이 들어왔을 때의 응답 헤더 생성
-            // 쿠키에 logined= 값을 세팅해줌
+            // 로그인 요청이 들어왔을 때
+            // 헤더의 쿠키에 logined= 값을 세팅해준 후 index.html 로 리다이렉트
             else if (url_suffix[0].equals("/user/login") ) {
                 log.info("cookie: {}",cookie);
-                log.info("Path: {}",new File("./webapp" + url).toPath());
-
-                response200HeaderCookie(dos, cookie);
+                response302Header(dos,cookie);
             }
             // 일반 응답 헤더 생성
             else{
@@ -147,10 +152,11 @@ public class RequestHandler extends Thread {
         }
     }
 
-    private void response200HeaderCookie(DataOutputStream dos, String cookie) {
+    private void response200HeaderCookie(DataOutputStream dos, String cookie, int lengthOfBodyContent) {
         try {
             dos.writeBytes("HTTP/1.1 200 OK \r\n");
-            dos.writeBytes("Content-Type: text/html;\r\n");
+            dos.writeBytes("Content-Type: text/html;charset=utf-8\r\n");
+            dos.writeBytes("Content-Length: " + lengthOfBodyContent + "\r\n");
             dos.writeBytes("Set-Cookie: " + cookie + "\r\n");
             dos.writeBytes("\r\n");
         } catch (IOException e) {
@@ -181,7 +187,19 @@ public class RequestHandler extends Thread {
             log.error(e.getMessage());
         }
     }
+    // 쿠키 값을 세팅 후 302 리다이렉션을 보내는 메소드
+    private void response302Header(DataOutputStream dos, String cookie) {
+        try {
+            String location = "/index.html";
 
+            dos.writeBytes("HTTP/1.1 302 Found \r\n");
+            dos.writeBytes("Location: "+ location+"\r\n");
+            dos.writeBytes("Set-Cookie: " + cookie);
+            dos.writeBytes("\r\n");
+        } catch (IOException e) {
+            log.error(e.getMessage());
+        }
+    }
     private void responseBody(DataOutputStream dos, byte[] body) {
         try {
             dos.write(body, 0, body.length);
