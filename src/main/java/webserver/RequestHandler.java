@@ -97,6 +97,8 @@ public class RequestHandler extends Thread {
             }
             // 로그인 요청이 들어올 때
             else if (url_suffix[0].equals("/user/login") ) {
+                // body 에 들어있는 id 와 pw 를 읽기 위해 br 와 contentLength 를 파라미터로 넣어줍니다.
+                // br 에서 contentLength 만큼 읽은 데이터가 body 안에 들어 있는 데이터이기 때문입니다.
                 String bodyData = IOUtils.readData(br, contentLength);
                 Map<String, String> paramMap = HttpRequestUtils.parseQueryString(bodyData);
 
@@ -105,12 +107,10 @@ public class RequestHandler extends Thread {
 
                     // 로그인 성공 시 쿠키에 logined=true 값을 추가하기 위해 세팅
                     if (findUser.getPassword().equals(paramMap.get("password"))) {
-                        log.info("sucess");
                         cookie = "logined=true";
                     }
                     // 로그인 실패 시 쿠키에 logined=false 값을 추가하기 위해 세팅
                     else{
-                        log.info("fail");
                         cookie = "logined=false";
                     }
                 }else{
@@ -118,13 +118,14 @@ public class RequestHandler extends Thread {
                     cookie = "logined=false";
                 }
             }
+
             // /user/list.html 로 요청이 들어왔을 때
             // Map 데이터인 cookies 의 logined 의 값이 false이면 url 을 login.html로 보낸다.
-            else if (url_suffix[0].equals("/user/list.html")) {
-                if (cookies.get("logined").equals("false")) {
-                    url = "/user/login.html";
-                }
-            }
+//            else if (url_suffix[0].equals("/user/list.html")) {
+//                if (cookies.get("logined").equals("false")) {
+//                    url = "/user/login.html";
+//                }
+//            }
 
             // OutStream을 통해 응답 출력
             DataOutputStream dos = new DataOutputStream(out);
@@ -138,6 +139,10 @@ public class RequestHandler extends Thread {
             else if (url_suffix[0].equals("/user/login") ) {
                 log.info("cookie: {}",cookie);
                 response302Header(dos,cookie);
+            }
+            // /user/list.html 로 요청이 오고 logined 쿠키 값이 false 일 때
+            else if (url_suffix[0].equals("/user/list.html") && cookies.get("logined").equals("false")) {
+                response302Header(dos);
             }
             // 일반 응답 헤더 생성
             else{

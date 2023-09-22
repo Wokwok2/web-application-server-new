@@ -734,7 +734,15 @@
    ```
    쿠키는 parseCookies 를 통해 Map 형식으로 리턴됩니다. 그렇기에 우선 Map 형식의 cookies 변수를 선언해줬습니다.   
    그리고 br.line() 을 통해 Cookie 가 인식되면 parseCookies 메소드를 호출합니다.   
-5. 이제 응답을 보내야됩니다. 
+5. 이제 응답을 보내야됩니다. logined 가 true 일 때는 그대로 /user/list.html 로 응답을 보내면 됩니다.  
+   false 일 때는 index.html 로 리다이렉션을 보내야 합니다.  
+   ```java
+   // /user/list.html 로 요청이 오고 logined 쿠키 값이 false 일 때
+   else if (url_suffix[0].equals("/user/list.html") && cookies.get("logined").equals("false")) {
+        response302Header(dos);
+   }
+   ```
+   위와 같이 작성했습니다. true일 때는 정상적으로 list.html이 응답되고, false일 때는 리다이렉션을 보내게 됩니다.
 
    
    
