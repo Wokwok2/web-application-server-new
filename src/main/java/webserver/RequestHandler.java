@@ -140,8 +140,8 @@ public class RequestHandler extends Thread {
                 log.info("cookie: {}",cookie);
                 response302Header(dos,cookie);
             }
-            // /user/list.html 로 요청이 오고 logined 쿠키 값이 false 일 때
-            else if (url_suffix[0].equals("/user/list.html") && cookies.get("logined").equals("false")) {
+            // user/list.html 로 요청이 오고 logined 쿠키 값이 false 일 때 index.html 로 리다이렉트
+            else if (url_suffix[0].equals("/user/list.html") && !Boolean.parseBoolean(cookies.get("logined")) ) {
                 response302Header(dos);
             }
             // 일반 응답 헤더 생성

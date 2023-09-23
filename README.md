@@ -733,7 +733,8 @@
    
    ```
    쿠키는 parseCookies 를 통해 Map 형식으로 리턴됩니다. 그렇기에 우선 Map 형식의 cookies 변수를 선언해줬습니다.   
-   그리고 br.line() 을 통해 Cookie 가 인식되면 parseCookies 메소드를 호출합니다.   
+   그리고 br.line() 을 통해 Cookie 가 인식되면 parseCookies 메소드를 호출합니다.
+
 5. 이제 응답을 보내야됩니다. logined 가 true 일 때는 그대로 /user/list.html 로 응답을 보내면 됩니다.  
    false 일 때는 index.html 로 리다이렉션을 보내야 합니다.  
    ```java
@@ -744,7 +745,19 @@
    ```
    위와 같이 작성했습니다. true일 때는 정상적으로 list.html이 응답되고, false일 때는 리다이렉션을 보내게 됩니다.
 
-   
+6. 요구사항을 보니 안 쓴 메소드가 있었습니다. String 을 Boolean 으로 바꿔주는 String.parseBoolean() 메소드가 있었습니다.  
+   그리고 자바 클래스 중 StringBuilder 사용을 하면 사용자 목록을 동적으로 출력할 수 있다고 합니다.  
+   아마 회원가입되어 있는 사용자를 list.html 에 추가하라는 것 같습니다.  
+   이 두 가지도 마저 추가해보겠습니다.  
+7. 우선 parseBoolean() 메소드를 호출해봤습니다. 
+   ```java
+   // user/list.html 로 요청이 오고 logined 쿠키 값이 false 일 때 index.html 로 리다이렉트
+   else if (url_suffix[0].equals("/user/list.html") && !Boolean.parseBoolean(cookies.get("logined")) ) {
+        response302Header(dos);
+   }
+   ```  
+   위와 같이 logined 쿠키의 값이 원래는 String 으로 false 가 들어있었습니다. 그것을 Boolean.parseBoolean() 메소드를 사용해 Boolean 타입으로 변경해줬습니다.  
+8. 
    
 ### 요구사항 7 - stylesheet 적용
 * 
