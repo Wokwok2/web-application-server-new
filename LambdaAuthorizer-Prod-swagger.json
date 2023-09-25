@@ -112,7 +112,8 @@
     "/pets/{petId}" : {
       "get" : {
         "operationId" : "GetPet",
-        "produces" : [ "*/*" ],
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
         "parameters" : [ {
           "name" : "petId",
           "in" : "path",
