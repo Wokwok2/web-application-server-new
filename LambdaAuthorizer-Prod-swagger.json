@@ -132,15 +132,9 @@
               "$ref" : "#/definitions/Pet"
             },
             "headers" : {
-              "Access-Control-Allow-Origin" : {
+             "Access-Control-Allow-Origin" : {
                 "type" : "string"
               },
-              "Access-Control-Allow-Methods" : {
-                "type" : "string"
-              },
-              "Access-Control-Allow-Headers" : {
-                "type" : "string"
-              }
             }
           }
         },
