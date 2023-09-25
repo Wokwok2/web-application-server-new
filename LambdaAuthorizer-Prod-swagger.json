@@ -86,7 +86,7 @@
         } ]
       },
       "options" : {
-        "consumes" : [ "application/json" ],
+        "consumes" : [ "*/*" ],
         "produces" : [ "application/json" ],
         "responses" : {
           "200" : {
