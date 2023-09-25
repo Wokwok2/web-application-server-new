@@ -118,6 +118,12 @@
           "in" : "path",
           "required" : true,
           "type" : "string"
+        },
+        {
+          "name" : "number",
+          "in" : "query",
+          "required" : true,
+          "type" : "integer"
         } ],
         "responses" : {
           "200" : {
