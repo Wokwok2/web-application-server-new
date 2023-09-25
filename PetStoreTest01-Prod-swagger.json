@@ -1,0 +1,223 @@
+{
+  "swagger" : "2.0",
+  "info" : {
+    "description" : "Your first API with Amazon API Gateway. This is a sample API that integrates via HTTP with our demo Pet Store endpoints",
+    "version" : "2023-09-12T06:45:33Z",
+    "title" : "PetStoreTest01"
+  },
+  "host" : "gioiujilg6.execute-api.ap-northeast-2.amazonaws.com",
+  "basePath" : "/Prod",
+  "schemes" : [ "https" ],
+  "paths" : {
+    "/" : {
+      "get" : {
+        "consumes" : [ "application/json" ],
+        "produces" : [ "text/html" ],
+        "responses" : {
+          "200" : {
+            "description" : "200 response",
+            "headers" : {
+              "Content-Type" : {
+                "type" : "string"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/pets" : {
+      "get" : {
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "type",
+          "in" : "query",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "page",
+          "in" : "query",
+          "required" : false,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "200 response",
+            "schema" : {
+              "$ref" : "#/definitions/Pets"
+            },
+            "headers" : {
+              "Access-Control-Allow-Origin" : {
+                "type" : "string"
+              }
+            }
+          }
+        },
+        "security" : [ {
+          "AuthProvider01" : [ "petstore/read", "aws.cognito.signin.user.admin" ]
+        } ]
+      },
+      "post" : {
+        "operationId" : "CreatePet",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "in" : "body",
+          "name" : "NewPet",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/NewPet"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "200 response",
+            "schema" : {
+              "$ref" : "#/definitions/NewPetResponse"
+            },
+            "headers" : {
+              "Access-Control-Allow-Origin" : {
+                "type" : "string"
+              }
+            }
+          }
+        }
+      },
+      "options" : {
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "responses" : {
+          "200" : {
+            "description" : "200 response",
+            "schema" : {
+              "$ref" : "#/definitions/Empty"
+            },
+            "headers" : {
+              "Access-Control-Allow-Origin" : {
+                "type" : "string"
+              },
+              "Access-Control-Allow-Methods" : {
+                "type" : "string"
+              },
+              "Access-Control-Allow-Headers" : {
+                "type" : "string"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/pets/{petId}" : {
+      "get" : {
+        "operationId" : "GetPet",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "petId",
+          "in" : "path",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "200 response",
+            "schema" : {
+              "$ref" : "#/definitions/Pet"
+            },
+            "headers" : {
+              "Access-Control-Allow-Origin" : {
+                "type" : "string"
+              }
+            }
+          }
+        }
+      },
+      "options" : {
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "petId",
+          "in" : "path",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "200 response",
+            "schema" : {
+              "$ref" : "#/definitions/Empty"
+            },
+            "headers" : {
+              "Access-Control-Allow-Origin" : {
+                "type" : "string"
+              },
+              "Access-Control-Allow-Methods" : {
+                "type" : "string"
+              },
+              "Access-Control-Allow-Headers" : {
+                "type" : "string"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "securityDefinitions" : {
+    "AuthProvider01" : {
+      "type" : "apiKey",
+      "name" : "Authorization",
+      "in" : "header",
+      "x-amazon-apigateway-authtype" : "cognito_user_pools"
+    }
+  },
+  "definitions" : {
+    "Pets" : {
+      "type" : "array",
+      "items" : {
+        "$ref" : "#/definitions/Pet"
+      }
+    },
+    "Empty" : {
+      "type" : "object"
+    },
+    "NewPetResponse" : {
+      "type" : "object",
+      "properties" : {
+        "pet" : {
+          "$ref" : "#/definitions/Pet"
+        },
+        "message" : {
+          "type" : "string"
+        }
+      }
+    },
+    "Pet" : {
+      "type" : "object",
+      "properties" : {
+        "id" : {
+          "type" : "integer"
+        },
+        "type" : {
+          "type" : "string"
+        },
+        "price" : {
+          "type" : "number"
+        }
+      }
+    },
+    "NewPet" : {
+      "type" : "object",
+      "properties" : {
+        "type" : {
+          "$ref" : "#/definitions/PetType"
+        },
+        "price" : {
+          "type" : "number"
+        }
+      }
+    },
+    "PetType" : {
+      "type" : "string",
+      "enum" : [ "dog", "cat", "fish", "bird", "gecko" ]
+    }
+  }
+}
