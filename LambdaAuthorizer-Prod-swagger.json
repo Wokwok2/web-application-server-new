@@ -5,7 +5,6 @@
     "version" : "2023-09-19T08:14:51Z",
     "title" : "LambdaAuthorizer"
   },
-  "host" : "xkh2lq4vp1.execute-api.ap-northeast-2.amazonaws.com",
   "basePath" : "/Prod",
   "schemes" : [ "https" ],
   "paths" : {
