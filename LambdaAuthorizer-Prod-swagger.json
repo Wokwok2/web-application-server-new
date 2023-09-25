@@ -133,7 +133,13 @@
             },
             "headers" : {
               "Access-Control-Allow-Origin" : {
-                "Content-Type", "api_key", "Authorization"
+                "type" : "string"
+              },
+              "Access-Control-Allow-Methods" : {
+                "type" : "string"
+              },
+              "Access-Control-Allow-Headers" : {
+                "type" : "string"
               }
             }
           }
