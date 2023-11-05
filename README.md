@@ -31,35 +31,38 @@
 
    > 참조 : https://juyoung-1008.tistory.com/19
 
-### 요구사항 1 - http://localhost:8080/index.html로 접속시 응답
+## 요구사항 1 - http://localhost:8080/index.html로 접속시 응답
 
+### 요청 처리 방법
 
-1. 요청을 하나씩 읽어야 한다. 요청은 다음과 같이 들어온다고 한다. hi.
-   
-     ``` http request
-    GET /index.html HTTP/1.1
-    Host: localhost:8080
-    Connection: keep-alive
-    Accept: */*
-    ```
-2. 이 요청은 webserver.RequestHandler 클래스의 run() 메소드에서 받는다.  
-코드는 아래와 같다.
-   ```java
-   public void run() {
-   	log.debug("New Client Connect! Connected IP : {}, Port : {}", connection.getInetAddress
-   	connection.getPort());
-   
-   try (InputStream in = connection.getInputStream(); OutputStream out = connection.getOutputStream()) {
-	      // TODO 사용자 요청에 대한 처리는 이 곳에 구현하면 된다.
-	      DataOutputStream dos = new DataOutputStream(out);
-	      byte[] body = "Hello World".getBytes();
-	      response200Header(dos, body.length);
-	      responseBody(dos, body);
-   } catch (IOException e) {
-       log.error(e.getMessage());
-	}
-   }
-   ```
+  ``` http request
+ GET /index.html HTTP/1.1
+ Host: localhost:8080
+ Connection: keep-alive
+ Accept: */*
+ ```
+
+요청을 하나씩 읽어야 한다. 요청은 위와 같이 들어온다고 한다.
+
+```java
+public void run() {
+ log.debug("New Client Connect! Connected IP : {}, Port : {}", connection.getInetAddress
+ connection.getPort());
+
+try (InputStream in = connection.getInputStream(); OutputStream out = connection.getOutputStream()) {
+       // TODO 사용자 요청에 대한 처리는 이 곳에 구현하면 된다.
+       DataOutputStream dos = new DataOutputStream(out);
+       byte[] body = "Hello World".getBytes();
+       response200Header(dos, body.length);
+       responseBody(dos, body);
+} catch (IOException e) {
+    log.error(e.getMessage());
+ }
+}
+```
+
+이 요청은 webserver.RequestHandler 클래스의 run() 메소드에서 받습니다. 
+
    
 3. 이제 이 요청을 `BufferedReader` 로 읽어서 가져오면 된다. 그전에 `InputStreamReader` 로 `InputStream` 을 읽어야 한다.  
    * 간단하게 정리하면 `InputStream`은 아스키 코드로 데이터를 읽어온다. 이것을 문자로 변환해주는 것이  `InputStreamReader` 이다.  
@@ -756,11 +759,12 @@
         response302Header(dos);
    }
    ```  
-   위와 같이 logined 쿠키의 값이 원래는 String 으로 false 가 들어있었습니다. 그것을 Boolean.parseBoolean() 메소드를 사용해 Boolean 타입으로 변경해줬습니다.  
-8. 
+   위와 같이 logined 쿠키의 값이 원래는 String 으로 false 가 들어있었습니다. 그것을 Boolean.parseBoolean() 메소드를 사용해 Boolean 타입으로 변경해줬습니다.
+   StringBuilder 는 원래 생각했던 기능이 아닌 것 같아서 구현하지 않고 넘어가도록 하겠습니다.
    
 ### 요구사항 7 - stylesheet 적용
-* 
+* 지금까지 구현한 코드는 css 파일을 지원하지 못하고 있습니다. 응답 헤더의 Content-Type 을 text/html 로 보내면 브라우저는 HTML파일이 응답되었다고 생각합니다.  
+  그렇기에 응답헤더의 Conent-Type 을 변경해야 합니다. 
 
 ### heroku 서버에 배포 후
 * 
