@@ -33,6 +33,49 @@
 
 ## 요구사항 1 - http://localhost:8080/index.html로 접속시 응답
 
+<br/>
+
+### 서버 소켓 연결 파악
+```java
+while ((connection = listenSocket.accept()) != null) {
+    RequestHandler requestHandler = new RequestHandler(connection);
+    requestHandler.start();
+}
+```
+
+위 코드는 webserver.WebServer 클래스에서 서버 소켓을 생성한 후 클라이언트 소켓의 요청이 들어오는 것을 기다리는 코드 입니다.  
+
+위 로직에 대해 자세히 알아보겠습니다.  
+
+위 while 조건에 accept 메소드가 존재합니다. 이 accept 메소드는 호출되면 소켓이 클라이언의 연결 요청을 기다리는 상태가 됩니다.  
+아무 클라이언트의 연결 요청이 들어오지 않으면 계속해서 대기 합니다.  
+
+
+클라이언트의 연결 요청이 수신되면 accept 메소드는 그 즉시 리턴되고, 서버 소켓이 클라이언트와 통신하기 위한 소켓을 리턴합니다.  
+이러한 방법은 서버가 여러 클라이언트와 동시에 통신하기 위해 사용되는 방법입니다.  
+클라이언트 각각에 대해 별도의 소켓을 생성하여 통신하는 방법 입니다.  
+
+서버 소켓이 여러 클라이언트와 통신을 해야되기에 while 문을 통해 accept 메소드를 반복해서 호출하는 것 입니다.  
+그리고 각 클라이언트에 대한 별도의 소켓을 생성합니다.   
+
+<br/>
+
+### Thread 클래스
+
+````java
+RequestHandler requestHandler = new RequestHandler(connection);
+requestHandler.start();
+````
+
+Thread 클래스의 start 메소드가 호출되면 새로운 스레드가 생성됩니다. 그리고 생성된 스레드에서 run 메소드가 호출됩니다.  
+
+위 코드에서 RequestHandler 클래스는 Thread 클래스를 상속받았기에 start 메소드를 호출해서 스레드를 생성합니다.  
+
+> Thread 를 구현할 때 Thread 를 상속하는 방법 말고 Runnable 인터페이스를 구현하는 방법도 존재합니다.  
+> 이렇게 방법이 두 개인 이유는 자바는 단일 상속만 지원하기 때문입니다. 다른 클래스를 상속받아야 하는 상황이라면 Runnable 인터페이스를 구현하면 됩니다. 
+
+<br/>
+
 ### 요청 처리 방법
 
   ``` http request
@@ -42,59 +85,32 @@
  Accept: */*
  ```
 
-요청을 하나씩 읽어야 한다. 요청은 위와 같이 들어온다고 한다.
+요청은 위와 같이 들어옵니다. 이러한 요청을 처리하기 위해서는 요청을 하나씩 읽어야 합니다.
 
 ```java
 public void run() {
- log.debug("New Client Connect! Connected IP : {}, Port : {}", connection.getInetAddress
- connection.getPort());
+    log.debug("New Client Connect! Connected IP : {}, Port : {}", connection.getInetAddress, connection.getPort());
 
-try (InputStream in = connection.getInputStream(); OutputStream out = connection.getOutputStream()) {
+   try (InputStream in = connection.getInputStream(); OutputStream out = connection.getOutputStream()) {
        // TODO 사용자 요청에 대한 처리는 이 곳에 구현하면 된다.
        DataOutputStream dos = new DataOutputStream(out);
        byte[] body = "Hello World".getBytes();
        response200Header(dos, body.length);
        responseBody(dos, body);
-} catch (IOException e) {
-    log.error(e.getMessage());
- }
+   } catch (IOException e) {
+       log.error(e.getMessage());  
+   }
 }
 ```
 
-이 요청은 webserver.RequestHandler 클래스의 run() 메소드에서 받습니다. 
+위 요청은 webserver.RequestHandler 클래스의 run() 메소드에서 받습니다.
 
-1. 요청을 하나씩 읽어야 합니다. 요청은 다음과 같이 들어온다고 합니다.
-   
-     ``` http request
-    GET /index.html HTTP/1.1
-    Host: localhost:8080
-    Connection: keep-alive
-    Accept: */*
-    ```
-2. 이 요청은 webserver.RequestHandler 클래스의 run() 메소드에서 받습니다. 
-   ```java
-   public void run() {
-   	log.debug("New Client Connect! Connected IP : {}, Port : {}", connection.getInetAddress
-   	connection.getPort());
-   
-   try (InputStream in = connection.getInputStream(); OutputStream out = connection.getOutputStream()) {
-	      // TODO 사용자 요청에 대한 처리는 이 곳에 구현하면 된다.
-	      DataOutputStream dos = new DataOutputStream(out);
-	      byte[] body = "Hello World".getBytes();
-	      response200Header(dos, body.length);
-	      responseBody(dos, body);
-   } catch (IOException e) {
-       log.error(e.getMessage());
-	}
-   }
-   ```
-   
-3. 이제 이 요청을 `BufferedReader` 로 읽어서 가져오면 됩니다. 그전에 `InputStreamReader` 로 `InputStream` 을 읽어야 합니다.  
-   간단하게 정리하면 `InputStream`은 아스키 코드로 데이터를 읽어옵니다. 이것을 문자로 변환해주는 것이  `InputStreamReader` 입니다. <br/><br/>
+이제 이 요청을 `BufferedReader` 로 읽어서 가져오면 됩니다. 그전에 `InputStreamReader` 로 `InputStream` 을 읽어야 합니다.  
+간단하게 정리하면 `InputStream`은 아스키 코드로 데이터를 읽어옵니다. 이것을 문자로 변환해주는 것이  `InputStreamReader` 입니다. <br/><br/>
 
-   그런데 `InputStreamReader` 를 사용하려면 먼저 크기를 정해줘야 읽을 수 있습니다. 우리가 받을 데이터가 크기가 얼마일지 우리는 알기 쉽지 않습니다. 크기가 무한정일수도 있습니다.
-   이를 위해 `BufferedReader` 를 사용합니다. `BufferedReader` 는 엔터를 치기 전까지 데이터를 읽어옵니다.  
-   [[Java] 콘솔 입력 - InputStream, BufferedReader, Scanner](https://makemethink.tistory.com/170)
+그런데 `InputStreamReader` 를 사용하려면 먼저 크기를 정해줘야 읽을 수 있습니다. 우리가 받을 데이터가 크기가 얼마일지 우리는 알기 쉽지 않습니다. 크기가 무한정일수도 있습니다.
+이를 위해 `BufferedReader` 를 사용합니다. `BufferedReader` 는 엔터를 치기 전까지 데이터를 읽어옵니다.  
+[[Java] 콘솔 입력 - InputStream, BufferedReader, Scanner](https://makemethink.tistory.com/170)
    
 5. 처음에 작성한 코드는 다음과 같다.
    ```java
